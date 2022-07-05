@@ -17,6 +17,10 @@ terraform {
   }
 }
 
+locals {
+  name_prefix = "${var.environment}-${var.project}"
+}
+
 resource "aws_vpc" "this" {
   cidr_block           = var.vpc_cidr_block
   enable_dns_support   = true
@@ -32,7 +36,7 @@ resource "aws_subnet" "public_subnet_1" {
   cidr_block              = var.public_subnet_1_cidr
   map_public_ip_on_launch = var.map_public_ip_on_launch
   tags = {
-    Name = "${var.environment}-${var.project}-public-subnet-01"
+    Name = "${local.name_prefix}-public-subnet-01"
   }
 }
 
@@ -42,7 +46,7 @@ resource "aws_subnet" "public_subnet_2" {
   cidr_block              = var.public_subnet_2_cidr
   map_public_ip_on_launch = var.map_public_ip_on_launch
   tags = {
-    Name = "${var.environment}-${var.project}-public-subnet-02"
+    Name = "${local.name_prefix}-public-subnet-02"
   }
 }
 
@@ -52,7 +56,7 @@ resource "aws_subnet" "public_subnet_3" {
   cidr_block              = "10.120.2.0/25"
   map_public_ip_on_launch = var.map_public_ip_on_launch
   tags = {
-    Name = "${var.environment}-${var.project}-public-subnet-03"
+    Name = "${local.name_prefix}-public-subnet-03"
   }
 }
 
@@ -63,7 +67,7 @@ resource "aws_subnet" "private_subnet_1" {
   availability_zone = var.availability_zones[0]
   cidr_block        = var.private_subnet_1_cidr
   tags = {
-    Name = "${var.environment}-${var.project}-private-subnet-01"
+    Name = "${local.name_prefix}-private-subnet-01"
   }
 }
 
@@ -72,7 +76,7 @@ resource "aws_subnet" "private_subnet_2" {
   availability_zone = var.availability_zones[1]
   cidr_block        = var.private_subnet_2_cidr
   tags = {
-    Name = "${var.environment}-${var.project}-private-subnet-02"
+    Name = "${local.name_prefix}-private-subnet-02"
   }
 }
 
@@ -81,7 +85,7 @@ resource "aws_subnet" "private_subnet_3" {
   availability_zone = var.availability_zones[2]
   cidr_block        = var.private_subnet_3_cidr
   tags = {
-    Name = "${var.environment}-${var.project}-private-subnet-03"
+    Name = "${local.name_prefix}-private-subnet-03"
   }
 }
 
@@ -98,7 +102,7 @@ resource "aws_eip" "elastic_ip_for_nat_gw" {
   vpc        = true
   depends_on = [aws_internet_gateway.IGW]
   tags = {
-    Name = "${var.environment}-${var.project}-natgateway-eip"
+    Name = "${local.name_prefix}-natgateway-eip"
   }
 }
 
@@ -118,14 +122,14 @@ resource "aws_nat_gateway" "NATGW" {
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.this.id
   tags = {
-    Name = "${var.environment}-${var.project}-public-route-table"
+    Name = "${local.name_prefix}-public-route-table"
   }
 }
 
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.this.id
   tags = {
-    Name = "${var.environment}-${var.project}-private-route-table"
+    Name = "${local.name_prefix}-private-route-table"
   }
 }
 
@@ -178,7 +182,7 @@ resource "aws_route" "nat_gw_route" {
 # Security Groups 
 
 resource "aws_security_group" "ecs_sg" {
-  name   = "${var.environment}-${var.project}-ecs-sg"
+  name   = "${local.name_prefix}-ecs-sg"
   vpc_id = aws_vpc.this.id
 
   ingress {
@@ -225,7 +229,7 @@ resource "aws_security_group" "ecs_sg" {
       self             = lookup(egress.value, "self", null)
     }
   }
-  tags = merge({ Name = "${var.environment}-${var.project}-ecs-sg" }, var.ecs_sg_tags)
+  tags = merge({ Name = "${local.name_prefix}-ecs-sg" }, var.ecs_sg_tags)
 
   lifecycle {
     ignore_changes = [ingress]
@@ -234,7 +238,7 @@ resource "aws_security_group" "ecs_sg" {
 
 
 resource "aws_security_group" "alb_sg" {
-  name   = "${var.environment}-${var.project}-ecs-sg"
+  name   = "${local.name_prefix}-ecs-sg"
   vpc_id = aws_vpc.this.id
   
   dynamic "ingress" {
@@ -265,9 +269,32 @@ resource "aws_security_group" "alb_sg" {
       self             = lookup(egress.value, "self", null)
     }
   }
-  tags = merge({ Name = "${var.environment}-${var.project}-ecs-sg" }, var.ecs_sg_tags)
+  tags = merge({ Name = "${local.name_prefix}-ecs-sg" }, var.ecs_sg_tags)
 
   lifecycle {
     ignore_changes = [ingress]
   }
+}
+
+resource "aws_security_group" "rds_sg" {
+  name   = "${local.name_prefix}-rds-sg"
+  vpc_id = aws_vpc.this.id
+
+  ingress {
+    from_port       = var.rds_port
+    to_port         = var.rds_port
+    protocol        = "tcp"
+    cidr_blocks     = [var.vpc_cidr_block]
+    security_groups = aws_security_group.ecs_sg.id
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = [var.vpc_cidr_block]
+  }
+  
+  tags = merge({ Name = "${local.name_prefix}-rds-sg" }, var.rds_sg_tags)
+
 }
