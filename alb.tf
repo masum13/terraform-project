@@ -5,7 +5,7 @@ resource "aws_lb" "this" {
   enable_deletion_protection       = true
   enable_cross_zone_load_balancing = true
   security_groups                  = aws_security_group.alb_sg.id
-  subnets = [aws_subnet.public_subnet_1.id,aws_subnet.public_subnet_2.id,aws_subnet.public_subnet_3.id]
+  subnets                          = [aws_subnet.public_subnet_1.id, aws_subnet.public_subnet_2.id, aws_subnet.public_subnet_3.id]
 
   access_logs {
     bucket  = "${local.name_prefix}-lb-access-logs-bucket"
@@ -13,7 +13,7 @@ resource "aws_lb" "this" {
     enabled = true
   }
 
-  tags = merge(local.tags, { "Name" = "${local.name_prefix}-alb" })
+  tags = { "Name" = "${local.name_prefix}-alb" }
 }
 
 resource "aws_lb_target_group" "this" {
@@ -30,19 +30,22 @@ resource "aws_lb_target_group" "this" {
   }
 }
 
-resource "aws_lb_listener" "this" {
+resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.this.arn
   port              = "80"
   protocol          = "HTTP"
-  redirect {
+  default_action {
+    type = "redirect"
+    redirect {
       status_code = "HTTP_301"
       port        = 443
       protocol    = "HTTPS"
       host        = "#{host}"
+    }
   }
 }
 
-resource "aws_lb_listener" "this" {
+resource "aws_lb_listener" "https" {
   load_balancer_arn = aws_lb.this.arn
   port              = "443"
   protocol          = "TLS"

@@ -1,5 +1,5 @@
 provider "aws" {
-  region = var.region
+  region = "us-east-1"
   default_tags {
     tags = {
       Environment = var.environment
@@ -8,14 +8,14 @@ provider "aws" {
   }
 }
 
-terraform {
-  backend "s3" {
-    bucket  = var.tfstate_bucket
-    encrypt = false
-    key     = "credencys/terraform.tfstate"
-    region  = var.region
-  }
-}
+# terraform {
+#   backend "s3" {
+#     bucket  = var.tfstate_bucket
+#     encrypt = false
+#     key     = "credencys/terraform.tfstate"
+#     region  = var.region
+#   }
+# }
 
 locals {
   name_prefix = "${var.environment}-${var.project}"
@@ -190,11 +190,11 @@ resource "aws_security_group" "ecs_sg" {
   vpc_id = aws_vpc.this.id
 
   ingress {
-      from_port        =  8080
-      to_port          =  8080
-      protocol         =  "TCP"
-      description      =  "Allow inbound access from ALB sg"
-      security_groups  =  aws_security_group.alb_sg.id
+    from_port       = 8080
+    to_port         = 8080
+    protocol        = "TCP"
+    description     = "Allow inbound access from ALB sg"
+    security_groups = aws_security_group.alb_sg.id
   }
 
   dynamic "ingress" {
@@ -212,11 +212,11 @@ resource "aws_security_group" "ecs_sg" {
   }
 
   egress {
-      from_port        =  8080
-      to_port          =  8080
-      protocol         =  "TCP"
-      description      =  "Allow outbound access to ALB sg"
-      security_groups  =  aws_security_group.alb_sg.id
+    from_port       = 8080
+    to_port         = 8080
+    protocol        = "TCP"
+    description     = "Allow outbound access to ALB sg"
+    security_groups = aws_security_group.alb_sg.id
   }
 
   dynamic "egress" {
@@ -244,7 +244,7 @@ resource "aws_security_group" "ecs_sg" {
 resource "aws_security_group" "alb_sg" {
   name   = "${local.name_prefix}-ecs-sg"
   vpc_id = aws_vpc.this.id
-  
+
   dynamic "ingress" {
     for_each = var.sg_alb_ingress
     content {
@@ -298,7 +298,30 @@ resource "aws_security_group" "rds_sg" {
     protocol    = "-1"
     cidr_blocks = [var.vpc_cidr_block]
   }
-  
+
   tags = merge({ Name = "${local.name_prefix}-rds-sg" }, var.rds_sg_tags)
+
+}
+
+resource "aws_security_group" "bastion_host_sg" {
+  name   = "${local.name_prefix}-bastion-host-sg"
+  vpc_id = aws_vpc.this.id
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    description = "Allow ssh access"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = { Name = "${local.name_prefix}-bastion-host-sg" }
 
 }

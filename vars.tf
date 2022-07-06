@@ -2,156 +2,155 @@
 
 variable "environment" {
   description = ""
-  type = string
+  type        = string
 }
 
 variable "project" {
   description = ""
-  type = string
+  type        = string
 }
 
 variable "tfstate_bucket" {
   description = ""
-  type = string
+  type        = string
 }
 
 variable "region" {
   description = ""
-  type = string
+  type        = string
+}
+
+variable "vpc_tags" {
+  description = ""
+  type        = map(string)
+  default     = {}
 }
 
 variable "availability_zones" {
   description = ""
-  type = list(string)
+  type        = list(string)
 }
 
 variable "vpc_cidr_block" {
   description = ""
-  type = list(string)
+  type        = string
 }
 
 variable "public_subnet_1_cidr" {
   description = ""
-  type = list(string)
+  type        = string
 }
 
 variable "public_subnet_2_cidr" {
   description = ""
-  type = list(string)
+  type        = string
 }
 
 variable "public_subnet_3_cidr" {
   description = ""
-  type = list(string)
+  type        = string
 }
 
 variable "private_subnet_1_cidr" {
   description = ""
-  type = list(string)
+  type        = string
 }
 
 variable "private_subnet_2_cidr" {
   description = ""
-  type = list(string)
+  type        = string
 }
 
 variable "private_subnet_3_cidr" {
   description = ""
-  type = list(string)
+  type        = string
 }
 
 variable "sg_ecs_ingress" {
   description = ""
-  type = list(string)
-  default = []
+  type        = list(string)
+  default     = []
 }
 
 variable "sg_ecs_egress" {
   description = ""
-  type = list(string)
-  default = []
+  type        = list(string)
+  default     = []
 }
 
 variable "ecs_sg_tags" {
   description = ""
-  type = map(string)
-  default = {}
+  type        = map(string)
+  default     = {}
 }
 
 variable "sg_alb_ingress" {
   description = ""
-  type = list(string)
-  default = []
+  type        = list(string)
+  default     = []
 }
 
 variable "sg_alb_egress" {
   description = ""
-  type = list(string)
-  default = []
+  type        = list(string)
+  default     = []
 }
 
 variable "alb_sg_tags" {
   description = ""
-  type = map(string)
-  default = {}
+  type        = map(string)
+  default     = {}
 }
 
 variable "rds_sg_tags" {
   description = ""
-  type = map(string)
-  default = {}
+  type        = map(string)
+  default     = {}
 }
 
 // ECS
 
+variable "container_name" {
+  description = ""
+  type        = string
+}
+
 variable "container_image" {
   description = ""
-  type = string
+  type        = string
 }
 
 variable "container_memory" {
   description = ""
-  type = string
+  type        = string
 }
 
 variable "container_cpu" {
   description = ""
-  type = string
+  type        = string
 }
 
 variable "database_name" {
   description = ""
-  type = string
+  type        = string
 }
 
 variable "database_password_secretsmanager_secret_arn" {
   description = ""
-  type = string
+  type        = string
 }
 
 variable "database_username_secretsmanager_secret_arn" {
   description = ""
-  type = string
+  type        = string
 }
 
 // ALB
 
 variable "private_certificate_arn" {
   description = ""
-  type = string
+  type        = string
 }
-
-# variable "" {
-#   description = ""
-#   type =
-#   default =
-# }
-
-# variable "" {
-#   description = ""
-#   type =
-#   default =
-# }
 
 // RDS 
 
@@ -219,6 +218,12 @@ variable "rds_engine_version" {
 
 variable "rds_allow_major_version_upgrade" {
   description = " Enable to allow major engine version upgrades when changing engine versions."
+  type        = bool
+  default     = false
+}
+
+variable "rds_apply_immediately" {
+  description = ""
   type        = bool
   default     = false
 }
@@ -308,3 +313,53 @@ variable "rds_instance_tags" {
   type        = any
   default     = {}
 }
+
+// Route53
+
+variable "domain_name" {
+  description = ""
+  type        = string
+}
+
+variable "route53_record_name" {
+  description = ""
+  type        = string
+}
+
+// ses 
+
+variable "email" {
+  description = ""
+  type        = list(string)
+  default     = []
+}
+
+// EC2 
+
+variable "instance_ami" {
+  description = ""
+  type        = string
+}
+
+variable "key_name" {
+  description = ""
+  type        = string
+}
+
+# variable "" {
+#   description = ""
+#   type =
+#   default =
+# }
+
+# variable "" {
+#   description = ""
+#   type =
+#   default =
+# }
+
+# variable "" {
+#   description = ""
+#   type =
+#   default =
+# }
