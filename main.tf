@@ -34,7 +34,7 @@ resource "aws_subnet" "public_subnet_1" {
   vpc_id                  = aws_vpc.this.id
   availability_zone       = var.availability_zones[0]
   cidr_block              = var.public_subnet_1_cidr
-  map_public_ip_on_launch = var.map_public_ip_on_launch
+  map_public_ip_on_launch = true
   tags = {
     Name = "${local.name_prefix}-public-subnet-01"
   }
@@ -44,7 +44,7 @@ resource "aws_subnet" "public_subnet_2" {
   vpc_id                  = aws_vpc.this.id
   availability_zone       = var.availability_zones[1]
   cidr_block              = var.public_subnet_2_cidr
-  map_public_ip_on_launch = var.map_public_ip_on_launch
+  map_public_ip_on_launch = true
   tags = {
     Name = "${local.name_prefix}-public-subnet-02"
   }
@@ -53,8 +53,8 @@ resource "aws_subnet" "public_subnet_2" {
 resource "aws_subnet" "public_subnet_3" {
   vpc_id                  = aws_vpc.this.id
   availability_zone       = var.availability_zones[2]
-  cidr_block              = "10.120.2.0/25"
-  map_public_ip_on_launch = var.map_public_ip_on_launch
+  cidr_block              = var.public_subnet_3_cidr
+  map_public_ip_on_launch = true
   tags = {
     Name = "${local.name_prefix}-public-subnet-03"
   }
@@ -93,7 +93,9 @@ resource "aws_subnet" "private_subnet_3" {
 
 resource "aws_internet_gateway" "IGW" {
   vpc_id = aws_vpc.this.id
-  tags   = var.IG_tags
+  tags = {
+    Name = "${local.name_prefix}-internet-gateway"
+  }
 }
 
 // EIP
@@ -111,7 +113,9 @@ resource "aws_eip" "elastic_ip_for_nat_gw" {
 resource "aws_nat_gateway" "NATGW" {
   allocation_id = aws_eip.elastic_ip_for_nat_gw.id
   subnet_id     = aws_subnet.public_subnet_1.id
-  tags          = var.NATGW_tags
+  tags = {
+    Name = "${local.name_prefix}-natgateway"
+  }
   depends_on = [
     aws_eip.elastic_ip_for_nat_gw
   ]
@@ -242,7 +246,7 @@ resource "aws_security_group" "alb_sg" {
   vpc_id = aws_vpc.this.id
   
   dynamic "ingress" {
-    for_each = var.sg_ecs_ingress
+    for_each = var.sg_alb_ingress
     content {
       from_port        = ingress.value.from_port
       to_port          = ingress.value.to_port
@@ -256,7 +260,7 @@ resource "aws_security_group" "alb_sg" {
   }
 
   dynamic "egress" {
-    for_each = var.sg_ecs_egress
+    for_each = var.sg_alb_egress
     content {
       from_port        = egress.value.from_port
       to_port          = egress.value.to_port
@@ -269,7 +273,7 @@ resource "aws_security_group" "alb_sg" {
       self             = lookup(egress.value, "self", null)
     }
   }
-  tags = merge({ Name = "${local.name_prefix}-ecs-sg" }, var.ecs_sg_tags)
+  tags = merge({ Name = "${local.name_prefix}-ecs-sg" }, var.alb_sg_tags)
 
   lifecycle {
     ignore_changes = [ingress]

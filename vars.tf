@@ -1,3 +1,157 @@
+// Common
+
+variable "environment" {
+  description = ""
+  type = string
+}
+
+variable "project" {
+  description = ""
+  type = string
+}
+
+variable "tfstate_bucket" {
+  description = ""
+  type = string
+}
+
+variable "region" {
+  description = ""
+  type = string
+}
+
+variable "availability_zones" {
+  description = ""
+  type = list(string)
+}
+
+variable "vpc_cidr_block" {
+  description = ""
+  type = list(string)
+}
+
+variable "public_subnet_1_cidr" {
+  description = ""
+  type = list(string)
+}
+
+variable "public_subnet_2_cidr" {
+  description = ""
+  type = list(string)
+}
+
+variable "public_subnet_3_cidr" {
+  description = ""
+  type = list(string)
+}
+
+variable "private_subnet_1_cidr" {
+  description = ""
+  type = list(string)
+}
+
+variable "private_subnet_2_cidr" {
+  description = ""
+  type = list(string)
+}
+
+variable "private_subnet_3_cidr" {
+  description = ""
+  type = list(string)
+}
+
+variable "sg_ecs_ingress" {
+  description = ""
+  type = list(string)
+  default = []
+}
+
+variable "sg_ecs_egress" {
+  description = ""
+  type = list(string)
+  default = []
+}
+
+variable "ecs_sg_tags" {
+  description = ""
+  type = map(string)
+  default = {}
+}
+
+variable "sg_alb_ingress" {
+  description = ""
+  type = list(string)
+  default = []
+}
+
+variable "sg_alb_egress" {
+  description = ""
+  type = list(string)
+  default = []
+}
+
+variable "alb_sg_tags" {
+  description = ""
+  type = map(string)
+  default = {}
+}
+
+variable "rds_sg_tags" {
+  description = ""
+  type = map(string)
+  default = {}
+}
+
+// ECS
+
+variable "container_image" {
+  description = ""
+  type = string
+}
+
+variable "container_memory" {
+  description = ""
+  type = string
+}
+
+variable "container_cpu" {
+  description = ""
+  type = string
+}
+
+variable "database_name" {
+  description = ""
+  type = string
+}
+
+variable "database_password_secretsmanager_secret_arn" {
+  description = ""
+  type = string
+}
+
+variable "database_username_secretsmanager_secret_arn" {
+  description = ""
+  type = string
+}
+
+// ALB
+
+variable "private_certificate_arn" {
+  description = ""
+  type = string
+}
+
+# variable "" {
+#   description = ""
+#   type =
+#   default =
+# }
+
+# variable "" {
+#   description = ""
+#   type =
+#   default =
+# }
 
 // RDS 
 

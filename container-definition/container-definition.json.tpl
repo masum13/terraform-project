@@ -27,7 +27,7 @@
         "retries": 5,
         "command": [
           "CMD-SHELL",
-          "curl -f http://localhost:8080/login || exit 1"
+          "curl -f http://localhost:8080 || exit 1"
         ],
         "timeout": 5,
         "interval": 30,
