@@ -1,6 +1,6 @@
 environment = "local"
 project = "credencys"
-tfstate_bucket = "masum-terraform"
+tfstate_bucket = "test-terraform"
 region = "us-east-1"
 
 vpc_cidr_block = "10.0.0.0/22"
@@ -44,7 +44,7 @@ container_memory = "1024"
 container_cpu = "512"
 
 database_name = "test-db"
-database_password_secretsmanager_secret_arn = "masum"
+database_password_secretsmanager_secret_arn = "test"
 database_username_secretsmanager_secret_arn = "testpassword"
 
 // ALB
@@ -60,7 +60,7 @@ rds_engine = "aurora-mysql"
 rds_engine_version = "5.7.mysql_aurora.2.10.2"
 
 rds_database_name = "test-db"
-rds_username = "masum"
+rds_username = "test"
 rds_master_password = "testpassword"
 
 rds_port = 3306
@@ -72,17 +72,17 @@ rds_instance_class = "db.t2.small"
 
 // Route53
 
-domain_name = "masum.com"
-route53_record_name = "alb.masum.com"
+domain_name = "test.com"
+route53_record_name = "alb.test.com"
 
 // SES
 
-email = ["masum.patel@compufytechnolab.com"]
+email = ["test.patel@compufytechnolab.com"]
 
 // Bastion host
 
 instance_ami = "ami-0cff7528ff583bf9a"
-key_name = "masum-new"
+key_name = "test-new"
 
 // Cloudfront
 
