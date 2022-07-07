@@ -8,7 +8,7 @@ resource "aws_acm_certificate" "this" {
 }
 
 resource "aws_route53_zone" "this" {
-  name          = "${local.name_prefix}-hosted-zone"
+  name          = var.domain_name
   force_destroy = false
   tags          = { Name = "${local.name_prefix}-hosted-zone" }
 }

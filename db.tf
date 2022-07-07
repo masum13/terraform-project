@@ -53,7 +53,7 @@ resource "aws_rds_cluster" "this" {
   backup_retention_period         = 3
   port                            = var.rds_port
   db_subnet_group_name            = aws_db_subnet_group.this.id
-  vpc_security_group_ids          = aws_security_group.rds_sg.id
+  vpc_security_group_ids          = [aws_security_group.rds_sg.id]
   storage_encrypted               = true
   apply_immediately               = var.rds_apply_immediately
   db_cluster_parameter_group_name = aws_rds_cluster_parameter_group.this.name

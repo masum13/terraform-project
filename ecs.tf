@@ -16,14 +16,14 @@ resource "aws_ecs_cluster" "this" {
 
 # container definition 
 data "template_file" "container_definition" {
-  template = file("${path.module}/container-definition/container-definition.json.tpl")
+  template = file("${path.module}/templates/container-definition.json.tpl")
 
   vars = {
-    container_name   = ""
+    container_name   = "test"
     container_image  = var.container_image
     container_memory = var.container_memory
     container_cpu    = var.container_cpu
-    command          = ""
+    # command          = ""
 
     database_username_secretsmanager_secret_arn = var.database_username_secretsmanager_secret_arn
     database_password_secretsmanager_secret_arn = var.database_password_secretsmanager_secret_arn
@@ -64,7 +64,7 @@ resource "aws_ecs_service" "this" {
   }
 
   load_balancer {
-    target_group_arn = ""
+    target_group_arn = aws_lb_target_group.this.arn
     container_name   = var.container_name
     container_port   = 8080
   }
@@ -77,9 +77,12 @@ resource "aws_ecs_service" "this" {
 resource "aws_appautoscaling_target" "this" {
   max_capacity       = 3
   min_capacity       = 1
-  resource_id        = "service/${local.name_prefix}/${var.container_name}"
+  resource_id        = "service/${local.name_prefix}/${local.name_prefix}"
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
+  depends_on = [
+    aws_ecs_service.this
+  ]
 }
 
 resource "aws_appautoscaling_policy" "this" {
@@ -97,4 +100,7 @@ resource "aws_appautoscaling_policy" "this" {
       predefined_metric_type = "ECSServiceAverageCPUUtilization"
     }
   }
+  depends_on = [
+    aws_appautoscaling_target.this
+  ]
 }

@@ -68,45 +68,28 @@ variable "private_subnet_3_cidr" {
 
 variable "sg_ecs_ingress" {
   description = ""
-  type        = list(string)
+  type        = list(any)
   default     = []
 }
 
 variable "sg_ecs_egress" {
   description = ""
-  type        = list(string)
+  type        = list(any)
   default     = []
-}
-
-variable "ecs_sg_tags" {
-  description = ""
-  type        = map(string)
-  default     = {}
 }
 
 variable "sg_alb_ingress" {
   description = ""
-  type        = list(string)
+  type        = list(any)
   default     = []
 }
 
 variable "sg_alb_egress" {
   description = ""
-  type        = list(string)
+  type        = list(any)
   default     = []
 }
 
-variable "alb_sg_tags" {
-  description = ""
-  type        = map(string)
-  default     = {}
-}
-
-variable "rds_sg_tags" {
-  description = ""
-  type        = map(string)
-  default     = {}
-}
 
 // ECS
 
@@ -284,18 +267,6 @@ variable "rds_multi_az_enabled" {
   default     = false
 }
 
-variable "rds_instance_engine" {
-  description = "The name of the database engine to be used for the RDS instance. Defaults to aurora. "
-  type        = string
-  default     = "aurora"
-}
-
-variable "rds_instance_engine_version" {
-  description = "he database engine version. When managing the engine version in the cluster,"
-  type        = string
-  default     = null
-}
-
 variable "rds_instance_class" {
   description = "The instance class to use. For details on CPU and memory, see Scaling Aurora DB Instances. Aurora uses db.* instance classes/types. "
   type        = string
@@ -331,7 +302,6 @@ variable "route53_record_name" {
 variable "email" {
   description = ""
   type        = list(string)
-  default     = []
 }
 
 // EC2 
@@ -346,20 +316,19 @@ variable "key_name" {
   type        = string
 }
 
-# variable "" {
-#   description = ""
-#   type =
-#   default =
-# }
+// Cloudfront
 
-# variable "" {
-#   description = ""
-#   type =
-#   default =
-# }
+variable "cloudfront_default_certificate" {
+  description = ""
+  type        = bool
+}
 
-# variable "" {
-#   description = ""
-#   type =
-#   default =
-# }
+variable "cloud_front_min_ttl" {
+  description = ""
+  type        = number
+}
+
+variable "cloud_front_default_ttl" {
+  description = ""
+  type        = number
+}

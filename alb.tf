@@ -4,14 +4,8 @@ resource "aws_lb" "this" {
   ip_address_type                  = "ipv4"
   enable_deletion_protection       = true
   enable_cross_zone_load_balancing = true
-  security_groups                  = aws_security_group.alb_sg.id
+  security_groups                  = [aws_security_group.alb_sg.id]
   subnets                          = [aws_subnet.public_subnet_1.id, aws_subnet.public_subnet_2.id, aws_subnet.public_subnet_3.id]
-
-  access_logs {
-    bucket  = "${local.name_prefix}-lb-access-logs-bucket"
-    prefix  = "${local.name_prefix}-alb"
-    enabled = true
-  }
 
   tags = { "Name" = "${local.name_prefix}-alb" }
 }
@@ -20,7 +14,7 @@ resource "aws_lb_target_group" "this" {
   name                 = "${local.name_prefix}-tg"
   port                 = 8080
   target_type          = "ip"
-  protocol             = "TCP"
+  protocol             = "HTTP"
   vpc_id               = aws_vpc.this.id
   deregistration_delay = "60"
 
@@ -48,9 +42,9 @@ resource "aws_lb_listener" "http" {
 resource "aws_lb_listener" "https" {
   load_balancer_arn = aws_lb.this.arn
   port              = "443"
-  protocol          = "TLS"
+  protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = var.private_certificate_arn
+  certificate_arn   = aws_acm_certificate.this.arn
 
   default_action {
     target_group_arn = aws_lb_target_group.this.arn

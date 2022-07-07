@@ -19,7 +19,7 @@
           "/bin/sh",
           "-c"
       ],
-      "command": ${command},
+      "command": [],
       "environment": [
         { "name" : "database_name", "value" : "${database_name}" }
       ],
