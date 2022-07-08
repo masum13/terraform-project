@@ -4,11 +4,11 @@ data "aws_iam_policy_document" "secret_read_only_access" {
     actions = [
       "secretsmanager:GetSecretValue"
     ]
-    resources = ["*"]
-    # resources = [
-    #   var.database_username_secretsmanager_secret_arn,
-    #   var.database_password_secretsmanager_secret_arn
-    # ]
+    # resources = ["*"]
+    resources = [
+      # var.database_username_secretsmanager_secret_arn,
+      aws_secretsmanager_secret.rds_password.arn
+    ]
   }
 }
 

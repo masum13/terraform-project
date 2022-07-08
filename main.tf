@@ -183,7 +183,47 @@ resource "aws_route" "nat_gw_route" {
   destination_cidr_block = "0.0.0.0/0"
 }
 
-# Security Groups 
+# Endpoint
+
+# resource "aws_vpc_endpoint" "secretmanager" {
+#   vpc_id            = aws_vpc.this.id
+#   service_name      = "com.amazonaws.${var.region}.secretsmanager"
+#   vpc_endpoint_type = "Interface"
+  
+#   subnet_ids = [aws_subnet.public_subnet_1.id,aws_subnet.public_subnet_2.id,aws_subnet.public_subnet_3.id]
+
+#   security_group_ids = [
+#     aws_security_group.secretmanager_endpoint_sg.id,
+#   ]
+
+#   private_dns_enabled = true
+# }
+
+# # Security Groups 
+
+# resource "aws_security_group" "secretmanager_endpoint_sg" {
+#   name   = "${local.name_prefix}-secretmanager-endpoint-sg"
+#   vpc_id = aws_vpc.this.id
+
+#   ingress {
+#     from_port       = 443
+#     to_port         = 443
+#     protocol        = "tcp"
+#     cidr_blocks     = [var.vpc_cidr_block]
+#     security_groups = [aws_security_group.ecs_sg.id]
+#   }
+
+#   egress {
+#     from_port   = 443
+#     to_port     = 443
+#     protocol    = "tcp"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
+
+#   tags = { Name = "${local.name_prefix}-secretmanager-endpoint-sg" }
+
+# }
+
 
 resource "aws_security_group" "ecs_sg" {
   name   = "${local.name_prefix}-ecs-sg"
@@ -219,6 +259,14 @@ resource "aws_security_group" "ecs_sg" {
     security_groups = [aws_security_group.alb_sg.id]
   }
 
+  egress {
+    from_port       = 443
+    to_port         = 443
+    protocol        = "TCP"
+    description     = "Allow https outbound access"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   dynamic "egress" {
     for_each = var.sg_ecs_egress
     content {
@@ -242,7 +290,7 @@ resource "aws_security_group" "ecs_sg" {
 
 
 resource "aws_security_group" "alb_sg" {
-  name   = "${local.name_prefix}-ecs-sg"
+  name   = "${local.name_prefix}-alb-sg"
   vpc_id = aws_vpc.this.id
 
   dynamic "ingress" {
@@ -273,7 +321,7 @@ resource "aws_security_group" "alb_sg" {
       self             = lookup(egress.value, "self", null)
     }
   }
-  tags = { Name = "${local.name_prefix}-ecs-sg" }
+  tags = { Name = "${local.name_prefix}-alb-sg" }
 
   lifecycle {
     ignore_changes = [ingress]

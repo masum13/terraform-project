@@ -44,8 +44,6 @@ container_memory = "1024"
 container_cpu = "512"
 
 database_name = "test-db"
-database_password_secretsmanager_secret_arn = "test"
-database_username_secretsmanager_secret_arn = "testpassword"
 
 // ALB
 # private_certificate_arn = ""
@@ -59,9 +57,9 @@ rds_source_region = "us-east-1"
 rds_engine = "aurora-mysql"
 rds_engine_version = "5.7.mysql_aurora.2.10.2"
 
-rds_database_name = "test-db"
+// DatabaseName must begin with a letter and contain only alphanumeric characters.
+rds_database_name = "testDB"
 rds_username = "test"
-rds_master_password = "testpassword"
 
 rds_port = 3306
 
@@ -72,21 +70,20 @@ rds_instance_class = "db.t2.small"
 
 // Route53
 
-domain_name = "test.com"
-route53_record_name = "alb.test.com"
+domain_name = "myapplication.tech"
+route53_record_name = "alb.myapplication.tech"
 
 // SES
 
-email = ["test.patel@compufytechnolab.com"]
+email = ["parth.shukla@compufytechnolab.com"]
 
 // Bastion host
 
 instance_ami = "ami-0cff7528ff583bf9a"
-key_name = "test-new"
+key_name = "bastion-host"
 
 // Cloudfront
 
-// cloudfront_default_certificate = "arn:aws:acm:us-east-1:218463848090:certificate/test"
 cloudfront_default_certificate = true
 cloud_front_min_ttl = 0
 cloud_front_default_ttl = 3600 

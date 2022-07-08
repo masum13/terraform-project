@@ -17,11 +17,11 @@
         { "name" : "database_username", "value" : "${database_username}" },
         { "name" : "database_name", "value" : "${database_name}" }
       ],
-       "healthCheck": {
+      "healthCheck": {
         "retries": 5,
         "command": [
           "CMD-SHELL",
-          "curl -f http://localhost || exit 1"
+          "curl -f http://localhost:8080 || exit 1"
         ],
         "timeout": 5,
         "interval": 30,

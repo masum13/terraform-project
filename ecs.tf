@@ -1,5 +1,5 @@
 ## Cloudwatch log group
-resource "aws_cloudwatch_log_group" "main" {
+resource "aws_cloudwatch_log_group" "this" {
   name = "${local.name_prefix}-logs"
 }
 
@@ -14,21 +14,33 @@ resource "aws_ecs_cluster" "this" {
   }
 }
 
+# ECR
+
+resource "aws_ecr_repository" "this" {
+  name                 = "${local.name_prefix}"
+  image_tag_mutability = "MUTABLE"
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+
+  tags = { Name = "${local.name_prefix}-image"}
+}
+
 # container definition 
 data "template_file" "container_definition" {
   template = file("${path.module}/templates/container-definition.json.tpl")
 
   vars = {
-    container_name   = "test"
+    container_name   = var.container_name
     container_image  = var.container_image
     container_memory = var.container_memory
     container_cpu    = var.container_cpu
-    # command          = ""
 
-    database_username_secretsmanager_secret_arn = var.database_username_secretsmanager_secret_arn
-    database_password_secretsmanager_secret_arn = var.database_password_secretsmanager_secret_arn
-    database_name                               = var.database_name
-
+    database_password_secretsmanager_secret_arn = aws_secretsmanager_secret.rds_password.arn
+    database_username = var.rds_username
+    database_name     = var.rds_database_name
+    
     web_ui_port          = "8080"
     awslogs_group        = "${local.name_prefix}-logs"
     awslog_stream_prefix = "${local.name_prefix}"
@@ -56,11 +68,12 @@ resource "aws_ecs_service" "this" {
   task_definition  = aws_ecs_task_definition.this.arn
   desired_count    = "1"
   network_configuration {
-    subnets = [aws_subnet.private_subnet_1.id, aws_subnet.private_subnet_2.id, aws_subnet.private_subnet_3.id]
+    subnets = [aws_subnet.private_subnet_1.id,aws_subnet.private_subnet_2.id,aws_subnet.private_subnet_3.id]
+    # subnets = [aws_subnet.public_subnet_1.id,aws_subnet.public_subnet_2.id,aws_subnet.public_subnet_3.id]
     security_groups = [
       aws_security_group.ecs_sg.id
     ]
-    assign_public_ip = false
+    assign_public_ip = true
   }
 
   load_balancer {

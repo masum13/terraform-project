@@ -48,7 +48,7 @@ resource "aws_rds_cluster" "this" {
   kms_key_id                      = var.rds_kms_key_id
   database_name                   = var.rds_database_name
   master_username                 = var.rds_username
-  master_password                 = var.rds_master_password
+  master_password                 = data.aws_secretsmanager_secret_version.rds_password.secret_string
   deletion_protection             = true
   backup_retention_period         = 3
   port                            = var.rds_port
@@ -80,7 +80,7 @@ resource "aws_rds_cluster_instance" "this" {
   apply_immediately            = var.rds_apply_immediately
   auto_minor_version_upgrade   = false
   promotion_tier               = 0
-  performance_insights_enabled = true
+  performance_insights_enabled = false
 
   # Updating engine version forces replacement of instances, and they shouldn't be replaced
   # because cluster will update them if engine version is changed
@@ -107,7 +107,7 @@ resource "aws_rds_cluster_instance" "multiAZ" {
   apply_immediately            = var.rds_apply_immediately
   auto_minor_version_upgrade   = false
   promotion_tier               = 1
-  performance_insights_enabled = true
+  performance_insights_enabled = false
 
   # Updating engine version forces replacement of instances, and they shouldn't be replaced
   # because cluster will update them if engine version is changed

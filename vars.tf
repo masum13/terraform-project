@@ -113,26 +113,12 @@ variable "container_cpu" {
   type        = string
 }
 
-variable "database_name" {
-  description = ""
-  type        = string
-}
-
-variable "database_password_secretsmanager_secret_arn" {
-  description = ""
-  type        = string
-}
-
-variable "database_username_secretsmanager_secret_arn" {
-  description = ""
-  type        = string
-}
-
 // ALB
 
 variable "private_certificate_arn" {
   description = ""
   type        = string
+  default     = ""
 }
 
 // RDS 
